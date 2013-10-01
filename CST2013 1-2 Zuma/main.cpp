@@ -1,18 +1,25 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2013-09-29 09:53
+* Filename      : main.cpp
+* Description   : O(n * k)
+*****************************************************************/
 #include <cstdio>
 using namespace std;
 
 const int maxLength = 10000;
-
 struct Bead {
     char type;
     Bead *prev, *next;
 };
-
 int main() {
     char initStatus[maxLength];
     scanf("%s", initStatus);
+
     if (initStatus[0] == '-')
         initStatus[0] = '\0';
+
     Bead *begin = new Bead;
     Bead *end = begin;
     for (int i = 0; ; i++) {
@@ -27,10 +34,12 @@ int main() {
 
     int n;
     scanf("%d", &n);
+
     while (n--) {
         int k;
         char c;
         scanf("%d %c", &k, &c);
+
         Bead *loc = begin;
         while (k--)
             loc = loc->next;
@@ -41,7 +50,7 @@ int main() {
         loc->next = loc->next->prev;
 
         loc = loc->next;
-        for ( ; ; ) {
+        while (1) {
             int sameBeadNum = 1;
             Bead *prev = loc->prev;
             while (prev != begin && prev->type == loc->type) {
@@ -64,6 +73,7 @@ int main() {
                 break;
             loc = (prev == begin ? next : prev);
         }
+
         if (begin->next == end)
             puts("-");
         else {

@@ -1,3 +1,10 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2013-09-29 09:58
+* Filename      : main.cpp
+* Description   : O(N * log(N) + M)
+*****************************************************************/
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -10,12 +17,14 @@ int cmp(const void *n1, const void *n2) {
 int main() {
     int N, H;
     scanf("%d%d", &N, &H);
+
     int ill[MaxNum + 1] = {H}, health[MaxNum + 1] = {-1};
     int illNum = 1, healthNum = 1;
     for (int i = 0; i < N; i++) {
         int height;
         char status;
         scanf("%d %c", &height, &status);
+
         if (status == '+')
             ill[illNum++] = height;
         else
@@ -23,11 +32,14 @@ int main() {
     }
     qsort(ill, illNum, sizeof(*ill), cmp);
     qsort(health, healthNum, sizeof(*health), cmp);
+
     int M;
     scanf("%d", &M);
-    while (M--) {
+
+    while (M--) {   // O(M)
         double Phit, Pfalse;
         scanf("%lf%lf", &Phit, &Pfalse);
+
         int hL = health[int(Pfalse * (healthNum - 1))] + 1;
         int hH = ill[int(ceil(Phit * (illNum - 1)))];
         if (hL <= hH)

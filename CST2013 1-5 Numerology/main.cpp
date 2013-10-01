@@ -1,3 +1,10 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2013-09-29 10:01
+* Filename      : main.cpp
+* Description   : O(e ^ N)
+*****************************************************************/
 #include <cmath>
 #include <cstdio>
 #include <climits>
@@ -36,12 +43,12 @@ void no(int N, long long int D, int id[], char op[], int n, long long int d, lon
         return ;
     }
     if (d < D) {
-        if (D / d > 2 * pow(10, N - n - 1))
+        if (D / d >= 2 * pow(10, N - n - 1))
             return ;
-        op[n] = '*';
-        no(N, D, id, op, n + 1, d * id[n + 1], minNo);
         op[n] = ' ';
         no(N, D, id, op, n + 1, calc(id, op, n + 1), minNo);
+        op[n] = '*';
+        no(N, D, id, op, n + 1, d * id[n + 1], minNo);
         op[n] = '+';
         no(N, D, id, op, n + 1, d + id[n + 1], minNo);
     } else {
