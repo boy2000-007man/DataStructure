@@ -30,30 +30,41 @@ void no(int N, long long int D, int id[], char op[], int n, long long int d, lon
     if (d >= minNo || minNo == D)
         return ;
     if (n + 1 == N) {
-        if (d == D) {
-            for (int i = 0; i < N - 1; i++) {
-                printf("%d", id[i]);
-                if (op[i] != ' ')
-                    putchar(op[i]);
-            }
-            printf("%d\n", id[N - 1]);
-        }
-        if (D <= d && d < minNo)
+        if (d >= D) {
             minNo = d;
+            if (d == D) {
+                for (int i = 0; i < N - 1; i++) {
+                    printf("%d", id[i]);
+                    if (op[i] != ' ')
+                        putchar(op[i]);
+                }
+                printf("%d\n", id[N - 1]);
+            }
+        }
         return ;
     }
     if (d < D) {
-        if (D / d >= 2 * pow(10, N - n - 1))
+        double tD = D / pow(10, N - n - 2);
+        if (d * 20 <= tD)
             return ;
         op[n] = ' ';
         no(N, D, id, op, n + 1, calc(id, op, n + 1), minNo);
+        if (d * (id[n + 1] + 1) <= tD)
+            return ;
         op[n] = '*';
         no(N, D, id, op, n + 1, d * id[n + 1], minNo);
+        if (d + id[n + 1] < tD)
+            return ;
         op[n] = '+';
         no(N, D, id, op, n + 1, d + id[n + 1], minNo);
     } else {
-        op[n] = (d == 1 || id[n + 1] == 1) ? '*' : '+';
-        no(N, D, id, op, n + 1, op[n] == '+' ? d + id[n + 1] : d * id[n + 1], minNo);
+        if (d == 1 || id[n + 1] == 1) {
+            op[n] = '*';
+            no(N, D, id, op, n + 1, d * id[n + 1], minNo);
+        } else {
+            op[n] = '+';
+            no(N, D, id, op, n + 1, d + id[n + 1], minNo);
+        }
     }
 }
 int main() {
@@ -69,7 +80,7 @@ int main() {
     char op[N - 1];
     no(N, D, id, op, 0, id[0], minNo);
     if (minNo > D)
-        printf("No\n%lld\n", minNo == LLONG_MAX ? 0 : minNo);
+        printf("No\n%lld\n", minNo != LLONG_MAX ? minNo : 0);
 
     return 0;
 }
