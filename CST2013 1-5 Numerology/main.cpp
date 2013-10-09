@@ -10,8 +10,8 @@
 #include <climits>
 using namespace std;
 
-long long int calc(int id[], char op[], int n) {
-    long long int res = 0, tmp = id[0];
+unsigned long long int calc(int id[], char op[], int n) {
+    unsigned long long int res = 0, tmp = id[0];
     char t = '+';
     for (int i = 0; i < n; i++)
         if (op[i] == ' ')
@@ -26,7 +26,7 @@ long long int calc(int id[], char op[], int n) {
         }
     return t == '+' ? res + tmp : res * tmp;
 }
-void no(int N, long long int D, int id[], char op[], int n, long long int d, long long int &minNo) {
+void no(int N, long long int D, int id[], char op[], int n, unsigned long long int d, long long int &minNo) {
     if (d >= minNo || minNo == D)
         return ;
     if (n + 1 == N) {
