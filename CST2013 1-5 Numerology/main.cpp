@@ -10,22 +10,8 @@
 #include <climits>
 using namespace std;
 
-unsigned long long int calc(int id[], char op[], int n) {
-    unsigned long long int res = 0, tmp = id[0];
-    char t = '+';
-    for (int i = 0; i < n; i++)
-        if (op[i] == ' ')
-            tmp = 10 * tmp + id[i + 1];
-        else {
-            if (t == '+')
-                res += tmp;
-            else
-                res *= tmp;
-            tmp = id[i + 1];
-            t = op[i];
-        }
-    return t == '+' ? res + tmp : res * tmp;
-}
+const int N_MAX = 24;
+double p10[N_MAX];
 void no(int N, long long int D, int id[], char op[], int n, unsigned long long int d, long long int &minNo) {
     if (d >= minNo || minNo == D)
         return ;
@@ -44,11 +30,32 @@ void no(int N, long long int D, int id[], char op[], int n, unsigned long long i
         return ;
     }
     if (d < D) {
-        double tD = D / pow(10, N - n - 2);
+        double tD = D / p10[N - n - 2];
         if (d * 20 <= tD)
             return ;
-        op[n] = ' ';
-        no(N, D, id, op, n + 1, calc(id, op, n + 1), minNo);
+        if (n == 0 || op[n - 1] != ' ') {
+            unsigned long long int td = d;
+            long long int tmp = id[n];
+            if (n == 0 || op[n - 1] == '+') {
+                td -= id[n];
+                for (int i = n + 1; i < N; i++) {
+                    op[n] = ' ';
+                    tmp = tmp * 10 + id[i];
+                    if (minNo - tmp <= td)
+                        break;
+                    no(N, D, id, op, i, td + tmp, minNo);
+                }
+            } else {
+                td /= id[n];
+                for (int i = n + 1; i < N; i++) {
+                    op[n] = ' ';
+                    tmp = tmp * 10 + id[i];
+                    if (minNo / tmp < td)
+                        break;
+                    no(N, D, id, op, i, td * tmp, minNo);
+                }
+            }
+        }
         if (d * (id[n + 1] + 1) <= tD)
             return ;
         op[n] = '*';
@@ -71,6 +78,8 @@ int main() {
     int N;
     long long int D;
     scanf("%d%lld", &N, &D);
+    for (int i = 0; i < N - 1; i++)
+        p10[i] = pow10(i);
 
     int id[N];
     for (int i = 0; i < N; i++)
