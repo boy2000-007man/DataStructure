@@ -66,6 +66,8 @@ unsigned long long int calc(int n) {
     return res;
 }
 double rightCalc(int n, int k, double D) {
+    if (n == 0)
+        return D;
     for (int i = n - 1, j = i; ; ) {
         while (op[i] == ' ')
             i--;
@@ -78,126 +80,69 @@ double rightCalc(int n, int k, double D) {
         j = --i;
     }
 }
-void no(int N, long long int D, int id[], int n, unsigned long long int d, long long int &minNo) {
-    if (minNo <= d || minNo == D)
-        return ;
-    if (n + 1 == N) {
-        if (D <= d) {
-            minNo = d;
-            if (D == minNo) {
-                for (int i = 0; i < N - 1; i++) {
-                    printf("%d", id[i]);
-                    if (op[i] != ' ')
-                        putchar(op[i]);
-                }
-                printf("%d\n", id[N - 1]);
-            }
-        }
-        return ;
-    }
-    if (N >> 1 < n && op[N / 2 - 1] != ' ')
-        return ;
-    if (d < D) {
-        double tD = D / p10[N - n - 2];
-        if (n == 0 || op[n - 1] != ' ') {
-            if (d * 20 <= tD)
-                return ;
-            unsigned long long int td = d;
-            if (n == 0 || op[n - 1] == '+') {
-                td -= id[n];
-                for (int i = n + 1; i < N; i++) {
-                    op[i - 1] = ' ';
-                    if (minNo <= td + num[n][i])
-                        break;
-                    no(N, D, id, i, td + num[n][i], minNo);
-                }
-            } else {
-                td /= id[n];
-                for (int i = n + 1; i < N; i++) {
-                    op[i - 1] = ' ';
-                    if (minNo <= td * num[n][i])
-                        break;
-                    no(N, D, id, i, td * num[n][i], minNo);
-                }
-            }
-        }
-        if (d * (id[n + 1] + 1) <= tD)
-            return ;
-        op[n] = '*';
-        no(N, D, id, n + 1, d * id[n + 1], minNo);
-        if (d + id[n + 1] < tD)
-            return ;
-        op[n] = '+';
-        no(N, D, id, n + 1, d + id[n + 1], minNo);
-    } else if (d == 1 || id[n + 1] == 1) {
-        op[n] = '*';
-        no(N, D, id, n + 1, d * id[n + 1], minNo);
-    } else {
-        op[n] = '+';
-        no(N, D, id, n + 1, d + id[n + 1], minNo);
-    }
-}
 int main() {
     int N;
     long long int D;
     scanf("%d%lld", &N, &D);
-    for (int i = 1; i < N - 1; i++)
-        p10[i] = p10[i - 1] * 10;
 
     int id[N];
     for (int i = 0; i < N; i++)
         scanf("%d", &id[i]);
+    for (int i = 0; i < N; i++) {
+        num[i][i] = id[i];
+        for (int j = i + 1; j < N; j++)
+            num[i][j] = num[i][j - 1] * 10 + id[j];
+    }
 
     if (N == 1) {
         printf("%s%d\n", id[0] == D ? "" : "No\n", id[0] < D ? 0 : id[0]);
         return 0;
     }
 
-    for (int i = 0; i < N; i++) {
-        num[i][i] = id[i];
-        for (int j = i + 1; j < N; j++)
-            num[i][j] = num[i][j - 1] * 10 + id[j];
-    }
     int middle = N >> 1;
     int leftNum = (int)pow(allOperatorsNum, middle - 1);
     int rightNum = (int)pow(allOperatorsNum, N - middle - 1);
-    for (int i = 0; i < leftNum; i++) {
-        makeOperators(middle, left[i].operators = i, op);
-        left[i].value = leftCalc(middle);
-    }
-    for (int i = 0; i < rightNum; i++) {
-        makeOperators(N - middle, right[i << 1].operators = i * 3 + 1, op);
-        right[i << 1].value = rightCalc(N - middle, middle, D);
-        op[0] = allOperators[2];
-        right[i * 2 + 1].operators = i * 3 + 2;
-        right[i * 2 + 1].value = rightCalc(N - middle, middle, D);
-    }
-    qsort(left, leftNum, sizeof(*left), cmp);
-    qsort(right, rightNum << 1, sizeof(*right), cmp);
+    for (int i = 0; i < leftNum; i++)
+        left[i].operators = i;
     long long int minNo = LLONG_MAX;
-    for (int l = 0, r = 0; r < rightNum * 2; r++) {
-        while (l < leftNum && left[l].value < right[r].value)
-            l++;
-        if (leftNum <= l)
-            break;
-        makeOperators(middle, left[l].operators, op);
-        makeOperators(N - middle, right[r].operators, op + middle - 1);
-        unsigned long long int res = calc(N);
-        if (res < minNo) {
-            minNo = res;
-            if (D == minNo) {
-                for (int i = 0; i < N - 1; i++) {
-                    printf("%d", id[i]);
-                        if (op[i] != ' ')
-                            putchar(op[i]);
+    for (int i = 0; middle + i <= N; i++) {
+        for (int j = 0; j < leftNum; j++) {
+            makeOperators(middle + i, left[j].operators, op);
+            left[j].value = leftCalc(middle + i);
+        }
+        for (int j = 0; j < rightNum; j++) {
+            makeOperators(N - middle - i, right[j << 1].operators = j * allOperatorsNum + 1, op);
+            right[j << 1].value = rightCalc(N - middle - i, middle + i, D);
+            op[0] = allOperators[2];
+            right[j * 2 + 1].operators = j * allOperatorsNum + 2;
+            right[j * 2 + 1].value = rightCalc(N - middle - i, middle + i, D);
+        }
+        qsort(left, leftNum, sizeof(*left), cmp);
+        qsort(right, rightNum << 1, sizeof(*right), cmp);
+        for (int l = 0, r = 0; r < rightNum * 2; r++) {
+            while (l < leftNum && left[l].value < right[r].value)
+                l++;
+            if (leftNum <= l)
+                break;
+            makeOperators(middle + i, left[l].operators, op);
+            makeOperators(N - middle - i, right[r].operators, op + middle + i - 1);
+            unsigned long long int res = calc(N);
+            if (res < minNo) {
+                minNo = res;
+                if (D == minNo) {
+                    for (int i = 0; i < N - 1; i++) {
+                        printf("%d", id[i]);
+                            if (op[i] != ' ')
+                                putchar(op[i]);
+                    }
+                    printf("%d\n", id[N - 1]);
+                    return 0;
                 }
-                printf("%d\n", id[N - 1]);
-                return 0;
             }
         }
+        if (rightNum != 1)
+            rightNum /= allOperatorsNum;
     }
-    printf("%lld\n", minNo);
-    no(N, D, id, 0, id[0], minNo);
     if (minNo > D)
         printf("No\n%lld\n", minNo != LLONG_MAX ? minNo : 0);
 
