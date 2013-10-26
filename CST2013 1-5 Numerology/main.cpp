@@ -11,14 +11,14 @@
 using namespace std;
 
 const int N_MAX = 24;
-double p10[N_MAX];
+double p10[N_MAX] = {1};
 void no(int N, long long int D, int id[], char op[], int n, unsigned long long int d, long long int &minNo) {
-    if (d >= minNo || minNo == D)
+    if (minNo <= d || minNo == D)
         return ;
     if (n + 1 == N) {
-        if (d >= D) {
+        if (D <= d) {
             minNo = d;
-            if (d == D) {
+            if (D == minNo) {
                 for (int i = 0; i < N - 1; i++) {
                     printf("%d", id[i]);
                     if (op[i] != ' ')
@@ -31,26 +31,25 @@ void no(int N, long long int D, int id[], char op[], int n, unsigned long long i
     }
     if (d < D) {
         double tD = D / p10[N - n - 2];
-        if (d * 20 <= tD)
-            return ;
         if (n == 0 || op[n - 1] != ' ') {
-            unsigned long long int td = d;
-            long long int tmp = id[n];
+            if (d * 20 <= tD)
+                return ;
+            unsigned long long int td = d, tmp = id[n];
             if (n == 0 || op[n - 1] == '+') {
-                td -= id[n];
+                td -= tmp;
                 for (int i = n + 1; i < N; i++) {
-                    op[n] = ' ';
+                    op[i - 1] = ' ';
                     tmp = tmp * 10 + id[i];
-                    if (minNo - tmp <= td)
+                    if (minNo <= (double)td + tmp)
                         break;
                     no(N, D, id, op, i, td + tmp, minNo);
                 }
             } else {
-                td /= id[n];
+                td /= tmp;
                 for (int i = n + 1; i < N; i++) {
-                    op[n] = ' ';
+                    op[i - 1] = ' ';
                     tmp = tmp * 10 + id[i];
-                    if (minNo / tmp < td)
+                    if (minNo <= (double)td * tmp)
                         break;
                     no(N, D, id, op, i, td * tmp, minNo);
                 }
@@ -64,22 +63,20 @@ void no(int N, long long int D, int id[], char op[], int n, unsigned long long i
             return ;
         op[n] = '+';
         no(N, D, id, op, n + 1, d + id[n + 1], minNo);
-    } else {
-        if (d == 1 || id[n + 1] == 1) {
+    } else if (d == 1 || id[n + 1] == 1) {
             op[n] = '*';
             no(N, D, id, op, n + 1, d * id[n + 1], minNo);
-        } else {
+    } else {
             op[n] = '+';
             no(N, D, id, op, n + 1, d + id[n + 1], minNo);
-        }
     }
 }
 int main() {
     int N;
     long long int D;
     scanf("%d%lld", &N, &D);
-    for (int i = 0; i < N - 1; i++)
-        p10[i] = pow10(i);
+    for (int i = 1; i < N - 1; i++)
+        p10[i] = p10[i - 1] * 10;
 
     int id[N];
     for (int i = 0; i < N; i++)
