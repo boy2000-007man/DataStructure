@@ -13,3 +13,5 @@
 *.a
 
 a.out
+test
+testdata
