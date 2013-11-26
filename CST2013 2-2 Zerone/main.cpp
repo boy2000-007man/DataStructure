@@ -22,7 +22,7 @@ void addLeaf(Node *root, char s01[]) {
     if (leaf->winner != -1)
         return ;
     leaf->winner = 1;
-    while ((leaf = leaf->root) != NULL) {
+    while (leaf = leaf->root) {
         leaf->winner = 1;
         for (int i = 0; i < 2; i++)
             if (leaf->leaf[i] != NULL)
@@ -32,6 +32,7 @@ void addLeaf(Node *root, char s01[]) {
 int main() {
     int n;
     scanf("%d", &n);
+
     Node *root = new Node(NULL);
     for (int i = 0, winner = -1; i < n; i++) {
         char s01[s01_LENGTH + 1];
@@ -43,5 +44,6 @@ int main() {
             printf(" %d\n%s %d", i, WINNER[winner = root->winner], i + 1);
     }
     printf(" %d\n", n);
+
     return 0;
 }
