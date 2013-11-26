@@ -1,33 +1,33 @@
 #include <cstdio>
-#include <string>
-#include <iostream>
+#include <cstring>
 using namespace std;
 
-string getName(const string &line) {
-    int start = line.find_first_of('\"'), end = line.find_last_of('\"');
-    return line.substr(start, end - start + 1);
+const int line_LENGTH = 1024 * 1024;
+char line[line_LENGTH + 1];
+char* getName(char line[]) {
+    *strrchr(line, '\"') = '\0';
+    return strchr(line, '\"') + 1;
 }
 int main() {
-    string line;
-    while (getline(cin, line) && line.find("<Behavior>") == string::npos);
+    while (!strstr(gets(line), "<Behavior>"));
     printf("{\"Behavior\":");
-    for (bool hasBrother = false; getline(cin, line) && line.find("</Behavior>") == string::npos; )
-        if (line.find("<Node") != string::npos) {
+    for (bool hasBrother = false; !strstr(gets(line), "</Behavior>"); )
+        if (strstr(line, "<Node")) {
             if (hasBrother) {
                 putchar(',');
                 hasBrother = false;
             }
-            printf("{\"Name\":%s", getName(line).c_str());
-            if (line.find("/>") == string::npos)
-                printf(",\"SonList\":[");
+            if (!strstr(line, "/>"))
+                printf("{\"Name\":\"%s\",\"SonList\":[", getName(line));
             else {
-                putchar('}');
+                printf("{\"Name\":\"%s\"}", getName(line));
                 hasBrother = true;
             }
-        } else if (line.find("</Node>") != string::npos) {
+        } else if (strstr(line, "</Node>")) {
             printf("]}");
             hasBrother = true;
         }
     printf("}\n");
+
     return 0;
 }
