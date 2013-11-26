@@ -31,12 +31,12 @@ void addLeaf(Node *root, char s01[]) {
 }
 int main() {
     int n;
-    scanf("%d", &n);
+    scanf("%d\n", &n);
 
     Node *root = new Node(NULL);
     for (int i = 0, winner = -1; i < n; i++) {
         char s01[s01_LENGTH + 1];
-        scanf("%s", s01);
+        gets(s01);
         addLeaf(root, s01);
         if (winner == -1)
             printf("%s %d", WINNER[winner = root->winner], i + 1);
