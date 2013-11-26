@@ -14,7 +14,7 @@ int topX[X_MAX],
 #define mod(a, b) (((a) % (b) + (b)) % (b))
 int main() {
     int N;
-    scanf("%d", &N);
+    scanf("%d\n", &N);
 
     double sum = 0.0;
     int currentDay = 0,
@@ -22,7 +22,7 @@ int main() {
         topHead = 0, topEnd = 0;
     for (int i = 0, lastDay; i < N << 1; i++) {
         char DX[DX_LENGTH];
-        scanf(" %[^\n]", DX);
+        gets(DX);
 
         currentDay += atoi(DX);
         if (!strchr(DX, ' ')) {
