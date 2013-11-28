@@ -1,8 +1,11 @@
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
 using namespace std;
 
 const int n_MAX = 500000;
-char mM[n_MAX];
+char mM[n_MAX + 1];
 int edge[n_MAX], revEdge[n_MAX],
     heap[n_MAX], reflection[n_MAX],
     GG[n_MAX],
@@ -13,6 +16,8 @@ const int m_MAX = 1200000;
 int point[m_MAX], next[m_MAX],
     revPoint[m_MAX], revNext[m_MAX],
     stack[n_MAX + m_MAX];
+//  int(log10(n) + 1) + 1 + int(log10(n) + 1) = 13
+const int uv_LENGTH = 13;
 
 #define moon(mM) ((mM) == 'M')
 #define money(mM) ((mM) == 'm')
@@ -25,12 +30,14 @@ template <typename T> void swap(T &a, T &b) {
 }
 int main() {
     int n, m;
-    scanf("%d%d%s", &n, &m, mM);
+    scanf("%d%d\n", &n, &m);
+    gets(mM);
     for (int i = 0; i < n; i++)
         revEdge[i] = edge[i] = -1;
     for (int i = 0; i < m; i++) {
-        int u, v;
-        scanf("%d%d", &u, &v);
+        char uv[uv_LENGTH + 1];
+        gets(uv);
+        int u = atoi(uv), v = atoi(strchr(uv, ' '));
         point[i] = v;
         next[i] = edge[u];
         edge[u] = i;
@@ -72,30 +79,34 @@ int main() {
     stack[stackNum++] = 0;
     for (int time = 0, linkNum = 0; !time || linkNum; ) {
         int u = stack[stackNum - 1];
-        if (DFN[u] == -1)
-            LOW[link[linkNum++] = u] = DFN[u] = time++;
-        bool end = true;
-        for (int i = edge[u]; i != -1; i = next[i]) {
-            int v = point[i];
-            if (DFN[v] == -1) {
-                stack[stackNum++] = v;
-                end = false;
-            } else if (set[v] == -1)
-                LOW[u] = min(LOW[u], LOW[v]);
-        }
-        if (end) {
+        if (set[u] != -1)
             stackNum--;
-            if (LOW[u] == DFN[u]) {
-                value[set[u] = u] = money(mM[u]);
-                while (u != link[--linkNum]) {
-                    int v = link[linkNum];
-                    value[set[v] = u] += money(mM[v]);
-                    if (revEdge[v] != -1) {
-                        int tmp = revEdge[v];
-                        while (revNext[tmp] != -1)
-                            tmp = revNext[tmp];
-                        revNext[tmp] = revEdge[u];
-                        revEdge[u] = revEdge[v];
+        else {
+            if (DFN[u] == -1)
+                LOW[link[linkNum++] = u] = DFN[u] = time++;
+            bool end = true;
+            for (int i = edge[u]; i != -1; i = next[i]) {
+                int v = point[i];
+                if (DFN[v] == -1) {
+                    stack[stackNum++] = v;
+                    end = false;
+                } else if (set[v] == -1)
+                    LOW[u] = min(LOW[u], LOW[v]);
+            }
+            if (end) {
+                stackNum--;
+                if (LOW[u] == DFN[u]) {
+                    value[set[u] = u] = money(mM[u]);
+                    while (u != link[--linkNum]) {
+                        int v = link[linkNum];
+                        value[set[v] = u] += money(mM[v]);
+                        if (revEdge[v] != -1) {
+                            int tmp = revEdge[v];
+                            while (revNext[tmp] != -1)
+                                tmp = revNext[tmp];
+                            revNext[tmp] = revEdge[u];
+                            revEdge[u] = revEdge[v];
+                        }
                     }
                 }
             }
@@ -114,7 +125,7 @@ int main() {
         if (MM[V] == -1) {
             for (int i = revEdge[V]; i != -1; i = revNext[i]) {
                 int U = set[revPoint[i]];
-                if (U != V) {
+                if (U != V && U != -1) {
                     if (MM[U] == -1) {
                         stack[stackNum++] = U;
                         end = false;
