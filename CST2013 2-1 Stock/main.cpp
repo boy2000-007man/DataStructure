@@ -3,8 +3,8 @@
 #include <cstring>
 using namespace std;
 
-//  int(log10(2^31 - 1) + 1) + 1 + int(log10(10^3 - 1) + 1) + 1 = 15
-const int DX_LENGTH = 15;
+//  int(log10(2^31 - 1) + 1) + 1 + int(log10(10^3 - 1) + 1) = 14
+const int DX_LENGTH = 14;
 const int N_MAX = 10000000;
 int stockX[N_MAX];
 const int X_MAX = 1000; // avoid been full
@@ -21,7 +21,7 @@ int main() {
         stockHead = 0, stockEnd = 0,
         topHead = 0, topEnd = 0;
     for (int i = 0, lastDay; i < N << 1; i++) {
-        char DX[DX_LENGTH];
+        char DX[DX_LENGTH + 1];
         gets(DX);
 
         currentDay += atoi(DX);
