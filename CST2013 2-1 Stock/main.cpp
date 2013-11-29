@@ -1,3 +1,10 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2013-11-30 00:10
+* Filename      : main.cpp
+* Description   : O(N)
+*****************************************************************/
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
