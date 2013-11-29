@@ -55,8 +55,10 @@ int main() {
             int v = point[i];
             if (GG[u] + moon(mM[v]) < GG[v]) {
                 GG[v] = GG[u] + moon(mM[v]);
-                for (int loc = reflection[v]; loc && GG[heap[loc]] < GG[heap[loc - 1 >> 1]]; swap(heap[loc = loc - 1 >> 1], heap[loc]))
+                for (int loc = reflection[v]; loc && GG[heap[loc]] < GG[heap[loc - 1 >> 1]]; loc = loc - 1 >> 1) {
                     swap(reflection[heap[loc - 1 >> 1]], reflection[heap[loc]]);
+                    swap(heap[loc - 1 >> 1], heap[loc]);
+                }
             }
         }
         u = heap[0];
@@ -64,9 +66,9 @@ int main() {
         int min = 0, root;
         do {
             root = min;
-            for (int j = 0; j < 2; j++)
-                if ((root + 1 << 1) - j < heapNum && GG[heap[(root + 1 << 1) - j]] < GG[heap[min]])
-                    min = (root + 1 << 1) - j;
+            for (int i = 0; i < 2; i++)
+                if ((root + 1 << 1) - i < heapNum && GG[heap[(root + 1 << 1) - i]] < GG[heap[min]])
+                    min = (root + 1 << 1) - i;
             swap(reflection[heap[min]], reflection[heap[root]]);
             swap(heap[min], heap[root]);
         } while (root != min);
@@ -77,7 +79,7 @@ int main() {
         set[i] = DFN[i] = -1;
     int stackNum = 0;
     stack[stackNum++] = 0;
-    for (int time = 0, linkNum = 0; !time || linkNum; ) {
+    for (int time = 0, linkNum = 0; stackNum; ) {
         int u = stack[stackNum - 1];
         if (set[u] != -1)
             stackNum--;
