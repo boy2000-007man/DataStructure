@@ -1,7 +1,13 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2013-11-30 01:12
+* Filename      : main.cpp
+* Description   : O((n + m) * log(n))
+*****************************************************************/
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <climits>
 using namespace std;
 
 const int n_MAX = 500000;
@@ -32,11 +38,13 @@ int main() {
     int n, m;
     scanf("%d%d\n", &n, &m);
     gets(mM);
+
     for (int i = 0; i < n; i++)
         revEdge[i] = edge[i] = -1;
     for (int i = 0; i < m; i++) {
         char uv[uv_LENGTH + 1];
         gets(uv);
+
         int u = atoi(uv), v = atoi(strchr(uv, ' '));
         point[i] = v;
         next[i] = edge[u];
