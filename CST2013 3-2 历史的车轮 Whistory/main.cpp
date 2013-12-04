@@ -52,15 +52,8 @@ int main() {
         if (hash[hashValue] != -1) {
             int next[n];
             next[0] = 1;
-            for (int j = 1; j < n; j++) {
-                next[j] = next[j - 1];
-                for (bool match = true; match = !match; )
-                    for (int k = 0; k + next[j] < j && match; k++)
-                        if (wheel[i][k] != wheel[i][k + next[j]]) {
-                            next[j] += next[k];
-                            match = false;
-                        }
-            }
+            for (int j = 1; j < n; j++)
+                for (next[j] = next[j - 1]; next[j] < j && wheel[i][j - 1] != wheel[i][j - 1 - next[j]]; next[j] += next[j - 1 - next[j]]);
 
             for (int j = hash[hashValue]; j != -1 && set[i] == -1; j = linkNext[j]) {
                 int loc = 0;
