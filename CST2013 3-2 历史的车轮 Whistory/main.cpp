@@ -55,18 +55,36 @@ int main() {
             for (int j = 1; j < n; j++)
                 for (next[j] = next[j - 1]; next[j] < j && wheel[i][j - 1] != wheel[i][j - 1 - next[j]]; next[j] += next[j - 1 - next[j]]);
 
+            /*
+            for (int j = 0; j < 20; j++) {
+                for (int k = 0; k < 20; k++)
+                    putchar(wheel[i][k]);
+                putchar('\n');
+                for (int k = 0; k < next[j]; k++)
+                    putchar(' ');
+                for (int k = 0; k < 20; k++)
+                    putchar(wheel[i][k]);
+                putchar('\n');
+                for (int k = 0; k < j; k++)
+                    putchar(' ');
+                printf("^\n");
+            }
+            */
             for (int j = hash[hashValue]; j != -1 && set[i] == -1; j = linkNext[j]) {
-                int loc = 0;
-                for (int k = 0; k < n; k++)
-                    while (loc <= k && wheel[link[j]][k] != wheel[i][k - loc])
-                        loc += next[k - loc];
-                if (loc < n) {
-                    bool match = true;
-                    for (int k = 0; k < loc && match; k++)
-                        match = wheel[link[j]][k] == wheel[i][n - loc + k];
-                    if (match)
-                        set[i] = link[j];
-                }
+                int loc = 0, match;
+                for (match = 0; match < n << 1 && match - loc != n - 1; match++)
+                    while (loc <= match && wheel[link[j]][match % n] != wheel[i][match - loc])
+                        loc += next[match - loc];
+                /*
+                printf("loc:%d\n", loc);
+                puts(wheel[link[j]]);
+                for (int k = 0; k < loc; k++)
+                    putchar(' ');
+                puts(wheel[i]);
+                */
+
+                if (match - loc == n - 1)
+                    set[i] = link[j];
             }
         }
         if (set[i] == -1) {

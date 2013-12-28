@@ -1,6 +1,5 @@
 #include "temperature.h"
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 using namespace std;
 
@@ -10,27 +9,28 @@ struct Station {
     int x, y,
         temp;
 } info[n_MAX];
-int orderX[n_MAX],
-    orderY[n_MAX];
+int orderX[n_MAX];
 #define root(loc) ((loc) - 1 >> 1)
 #define left(loc) (((loc) << 1) + 1)
 #define right(loc) (((loc) << 1) + 2)
 #define middle(a, b) ((a) + (b) >> 1)
+template <typename T> int cmp(T a, T b) {
+    if (a == b)
+        return 0;
+    return a < b ? -1 : 1;
+}
 int cmpX(const void *p1, const void *p2) {
-    return info[*(int *)p1].x - info[*(int *)p2].x;
+    return cmp(info[*(int *)p1].x, info[*(int *)p2].x);
 }
 int cmpY(const void *p1, const void *p2) {
-    return info[*(int *)p1].y - info[*(int *)p2].y;
+    return cmp(info[*(int *)p1].y, info[*(int *)p2].y);
 }
 struct SegmentTree {
     int size;
     int *orderY;
     long long int *tempSum;
-    SegmentTree(int l, int r, int orderY_[]) {
-        size = r - l;
-        int lX = info[orderX[l]].x,
-            rX = info[orderX[r - 1]].x;
-        orderY = new int[size];
+    SegmentTree(int l, int r) {
+        orderY = new int[size = r - l];
         for (int i = l, orderYNum = 0; i < r; i++)
             orderY[orderYNum++] = orderX[i];
         qsort(orderY, size, sizeof(*orderY), cmpY);
@@ -60,8 +60,8 @@ private:
             info[orderY[middle(l, r)]].temp;
     }
 } *rangeTree[n_MAX << 1];
-void makeRangeTree(int loc, int l, int r, int *orderY_ = NULL) {
-    rangeTree[loc] = new SegmentTree(l, r, orderY_ ? orderY_ : rangeTree[root(loc)]->orderY);
+void makeRangeTree(int loc, int l, int r) {
+    rangeTree[loc] = new SegmentTree(l, r);
     if (1 < r - l) {
         makeRangeTree(left(loc), l, middle(l, r));
         makeRangeTree(right(loc), middle(l, r), r);
@@ -83,10 +83,9 @@ int main() {
         GetStationInfo(i, &info[i].x, &info[i].y, &info[i].temp);
 
     for (int i = 0; i < n; i++)
-        orderY[i] = orderX[i] = i;
+        orderX[i] = i;
     qsort(orderX, n, sizeof(*orderX), cmpX);
-    qsort(orderY, n, sizeof(*orderY), cmpY);
-    makeRangeTree(0, 0, n, orderY);
+    makeRangeTree(0, 0, n);
 
     for (int x1, y1, x2, y2; GetQuery(&x1, &y1, &x2, &y2); ) {
         int num = 0;
