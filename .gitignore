@@ -12,6 +12,8 @@
 *.la
 *.a
 
+right*
+wrong*
 *.in
 *.out
 test*
