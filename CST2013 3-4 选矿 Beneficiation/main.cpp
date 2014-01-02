@@ -11,13 +11,18 @@ template <typename T> void swap(T &a, T &b) {
     a = b;
     b = tmp;
 }
-#define Report(a, b)\
-{\
-    Report(a, b);\
-    reported[b] = true;\
+#define Report(no, rank) {\
+    Report(no, rank);\
+    reported[rank] = true;\
 }
+    //printf("Report(%d, %d)\n", no, rank);
 void sort(int l, int r) {
-    printf("sort(%d, %d)\n", l, r);
+    /*
+    printf("sort(%d, %d):", l, r);
+    for (int i = l; i < r; i++)
+        printf(" %d", no[i]);
+    printf("\n");
+    */
     int result[4];
     if (r - l == 1)
         Report(no[l], l);
@@ -52,32 +57,55 @@ void sort(int l, int r) {
         swap(result[i], result[1 - result[i]]);
     }
     swap(no[l], no[l + 1]);
+    /*
+    for (int i = l; i < r; i++)
+        printf(" %d", no[i]);
+    printf("\n");
+    */
     int L = l + 2;
     for (int R = l + 3, wait[3]; R < r; R += result[3] ? 3 : 2) {
         for (int i = 0; i < 3; i++)
             wait[i] = R + i < r ? R + i : n_MAX;
         Measure(no[wait[0]], no[wait[1]], no[wait[2]], no[l], &result[0], &result[1], &result[2], &result[3]);
+        /*for (int i = 0; i < 3; i++)
+            printf("i:%d no[%d] result:%d\n", i, no[wait[i]], result[i]);
+            printf("no[%d] result[%d]\n", no[l], result[3]);
+            */
         if (result[3])
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 3 && wait[i] != n_MAX; i++)
                 result[i] = -result[3];
         else if (2 < r - R)
             for (int i = 0; i < 3; i++)
                 if (!result[i]) {
-                    swap(wait[i], wait[2]);
+                    swap(no[wait[i]], no[wait[2]]);
                     swap(result[i], result[2]);
+                    /*
+                    printf("!!!!!!!!!!!!!!!!!!\n");
+    for (int i = l; i < r; i++)
+        printf(" %d", no[i]);
+    printf("\n");
+    */
                     break;
                 }
         for (int i = 0; i < 3 && result[i]; i++)
             if (result[i] == 1)
                 swap(no[L++], no[wait[i]]);
+        /*
+    for (int i = l; i < r; i++)
+        printf(" %d", no[i]);
+    printf("\n");
+    */
     }
     L--;
     swap(no[l], no[L]);
+    /*
+    for (int i = l; i < r; i++)
+        printf(" %d", no[i]);
+    printf("\n");*/
     Report(no[L], L);
     sort(l, L);
     sort(L + 1, r);
 }
-#undef Report
 void sort2(int n) {
     int wait[4], result[4];
     for (int i = 0; i < 4; i++)
@@ -97,6 +125,7 @@ void sort2(int n) {
             Report(no[wait[i]], wait[i]);
     }
 }
+#undef Report
 int main() {
     no[n_MAX] = -1;
     for (int n; n = GetNumOfOre(); ) {
