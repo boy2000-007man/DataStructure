@@ -14,7 +14,7 @@ int orderX[n_MAX];
 #define left(loc) (((loc) << 1) + 1)
 #define right(loc) (((loc) << 1) + 2)
 #define middle(a, b) ((a) + (b) >> 1)
-template <typename T> int cmp(T a, T b) {
+template <typename T> int cmp(T &a, T &b) {
     if (a == b)
         return 0;
     return a < b ? -1 : 1;

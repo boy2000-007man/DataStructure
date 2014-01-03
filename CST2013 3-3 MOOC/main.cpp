@@ -9,24 +9,25 @@ template <typename T> void swap(T &a, T &b) {
     a = b;
     b = tmp;
 }
-void sort(bool code, int heapNum, int loc) {
-    while (loc && heap[code][loc] < heap[code][loc - 1 >> 1]) {
-        swap(reflection[!code][reflection[code][loc - 1 >> 1]], reflection[!code][reflection[code][loc]]);
-        swap(reflection[code][loc - 1 >> 1], reflection[code][loc]);
-        swap(heap[code][loc - 1 >> 1], heap[code][loc]);
-        loc = loc - 1 >> 1;
-    }
-    int min = loc, root;
-    do {
-        root = min;
-        for (int i = 0; i < 2; i++)
-            if ((root + 1 << 1) - i < heapNum && heap[code][(root + 1 << 1) - i] < heap[code][min])
-                min = (root + 1 << 1) - i;
-        swap(reflection[!code][reflection[code][root]], reflection[!code][reflection[code][min]]);
-        swap(reflection[code][root], reflection[code][min]);
-        swap(heap[code][root], heap[code][min]);
-    } while (root != min);
+#define root(loc) ((loc) - 1 >> 1)
+#define swap(a, b) {\
+    swap(reflection[!code][reflection[code][a]], reflection[!code][reflection[code][b]]);\
+    swap(reflection[code][a], reflection[code][b]);\
+    swap(heap[code][a], heap[code][b]);\
 }
+void sort(bool code, int heapNum, int loc) {
+    for (; loc && heap[code][loc] < heap[code][root(loc)]; loc = root(loc))
+        swap(loc, root(loc));
+    int min = loc;
+    do {
+        loc = min;
+        for (int i = 0; i < 2; i++)
+            if ((loc + 1 << 1) - i < heapNum && heap[code][(loc + 1 << 1) - i] < heap[code][min])
+                min = (loc + 1 << 1) - i;
+        swap(loc, min);
+    } while (loc != min);
+}
+#undef swap
 int main() {
     int N;
     scanf("%d", &N);

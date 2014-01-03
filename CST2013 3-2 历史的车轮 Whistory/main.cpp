@@ -5,92 +5,72 @@ using namespace std;
 const int m_MAX = 1000;
 int set[m_MAX],
     link[m_MAX],
-    linkNext[m_MAX];
+    next[m_MAX];
 const int n_MAX = 10000;
 char wheel[m_MAX][n_MAX + 1];
-const int primeNum = 0x10000;
+const int primeNum = 0xFFFF + 1;
 int prime[primeNum];
-const int hashNum = 0xFFFFFF;
-int hash[hashNum];
-int repeat(char trace[], int n, int loc) {
-    for (int i = 1; i < n; i++)
-        if (trace[(loc + i - 1) % n] != trace[(loc + i) % n])
-            return i;
-    return n;
+const int hashNum = 0xFFFFFF + 1;
+int hashTable[hashNum];
+unsigned int hash(char key[], int n) {
+    int loc = 1;
+    while (key[loc - 1] == key[loc])
+        if (++loc == n)
+            return prime[(key[0] * 0x100 + n) % primeNum];
+    unsigned int res = 1;
+    for (int i = 0, num = 0; i < n; i++)
+        if (key[(loc + i) % n] == key[(loc + i + 1) % n])
+            num++;
+        else {
+            res *= prime[(key[(loc + i) % n] * 0x100 + num) % primeNum];
+            num = 0;
+            res *= prime[key[(loc + i) % n] * 0x100 + key[(loc + i + 1) % n]];
+        }
+    return res;
 }
+#define min(a, b) ((a) < (b) ? (a) : (b))
 int main() {
     int m, n;
     scanf("%d%d\n", &m, &n);
 
-    prime[0] = 2;
-    for (int i = 1, k = 3; i < primeNum; k += 2) {
-        bool p = true;
-        for (int j = 0, root = (int)sqrt(k); prime[j] <= root && p; j++)
-            p = k % prime[j];
-        if (p)
-            prime[i++] = k;
-    }
+    for (int i = 1, k = prime[0] = 3; i < primeNum; prime[i++] = k)
+        for (bool p = false; p = !p; )
+            for (int j = 0, root = (int)sqrt(k += 2); prime[j] <= root && p; p = k % prime[j++]);
 
     for (int i = 0; i < hashNum; i++)
-        hash[i] = -1;
+        hashTable[i] = -1;
     int linkNum = 0;
     for (int i = 0; i < m; i++) {
         gets(wheel[i]);
 
-        unsigned int hashValue = 1;
-        for (int j = 0; j < n; j++)
-            hashValue *= prime[(wheel[i][j] << 8) + wheel[i][(j + 1) % n]];
-        hashValue &= 0xFFF000;
-        unsigned int tmp = wheel[i][0] != wheel[i][n - 1] ? prime[repeat(wheel[i], n, 0)] : 1;
-        for (int j = repeat(wheel[i], n, 0), k; j < n; j += k) {
-            k = repeat(wheel[i], n, j);
-            tmp *= prime[k];
-        }
-        hashValue |= 0x000FFF & tmp;
-
         set[i] = -1;
-        if (hash[hashValue] != -1) {
+        int hashValue = (hash(wheel[i], n) >> 1) % hashNum;
+        if (hashTable[hashValue] != -1) {
             int next[n];
             next[0] = 1;
             for (int j = 1; j < n; j++)
                 for (next[j] = next[j - 1]; next[j] < j && wheel[i][j - 1] != wheel[i][j - 1 - next[j]]; next[j] += next[j - 1 - next[j]]);
 
-            /*
-            for (int j = 0; j < 20; j++) {
-                for (int k = 0; k < 20; k++)
-                    putchar(wheel[i][k]);
-                putchar('\n');
-                for (int k = 0; k < next[j]; k++)
-                    putchar(' ');
-                for (int k = 0; k < 20; k++)
-                    putchar(wheel[i][k]);
-                putchar('\n');
-                for (int k = 0; k < j; k++)
-                    putchar(' ');
-                printf("^\n");
-            }
-            */
-            for (int j = hash[hashValue]; j != -1 && set[i] == -1; j = linkNext[j]) {
-                int loc = 0, match;
-                for (match = 0; match < n << 1 && match - loc != n - 1; match++)
-                    while (loc <= match && wheel[link[j]][match % n] != wheel[i][match - loc])
-                        loc += next[match - loc];
-                /*
-                printf("loc:%d\n", loc);
-                puts(wheel[link[j]]);
-                for (int k = 0; k < loc; k++)
-                    putchar(' ');
-                puts(wheel[i]);
-                */
+            for (int j = hashTable[hashValue]; j != -1; j = ::next[j]) {
+                int match = 0;
+                for (int loc = 0; loc < n && match < n; )
+                    if (wheel[link[j]][(loc + match) % n] == wheel[i][match])
+                        match++;
+                    else {
+                        loc += next[match];
+                        match -= min(match, next[match]);
+                    }
 
-                if (match - loc == n - 1)
+                if (match == n) {
                     set[i] = link[j];
+                    break;
+                }
             }
         }
         if (set[i] == -1) {
             link[linkNum] = i;
-            linkNext[linkNum] = hash[hashValue];
-            hash[hashValue] = linkNum++;
+            next[linkNum] = hashTable[hashValue];
+            hashTable[hashValue] = linkNum++;
         }
         printf("%d\n", set[i] + 1);
     }
