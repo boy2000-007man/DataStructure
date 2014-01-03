@@ -10,7 +10,7 @@ const int n_MAX = 10000;
 char wheel[m_MAX][n_MAX + 1];
 const int primeNum = 0xFFFF + 1;
 int prime[primeNum];
-const int hashNum = 0xFFFFFF + 1;
+const int hashNum = 1000003;
 int hashTable[hashNum];
 unsigned int hash(char key[], int n) {
     int loc = 1;
@@ -44,28 +44,23 @@ int main() {
         gets(wheel[i]);
 
         set[i] = -1;
-        int hashValue = (hash(wheel[i], n) >> 1) % hashNum;
+        int hashValue = hash(wheel[i], n) % hashNum;
         if (hashTable[hashValue] != -1) {
             int next[n];
             next[0] = 1;
             for (int j = 1; j < n; j++)
                 for (next[j] = next[j - 1]; next[j] < j && wheel[i][j - 1] != wheel[i][j - 1 - next[j]]; next[j] += next[j - 1 - next[j]]);
 
-            for (int j = hashTable[hashValue]; j != -1; j = ::next[j]) {
-                int match = 0;
-                for (int loc = 0; loc < n && match < n; )
-                    if (wheel[link[j]][(loc + match) % n] == wheel[i][match])
+            for (int j = hashTable[hashValue]; j != -1 && set[i] == -1; j = ::next[j])
+                for (int loc = 0, match = 0; loc < n && set[i] == -1; )
+                    if (match == n)
+                        set[i] = link[j];
+                    else if (wheel[link[j]][(loc + match) % n] == wheel[i][match])
                         match++;
                     else {
                         loc += next[match];
                         match -= min(match, next[match]);
                     }
-
-                if (match == n) {
-                    set[i] = link[j];
-                    break;
-                }
-            }
         }
         if (set[i] == -1) {
             link[linkNum] = i;
