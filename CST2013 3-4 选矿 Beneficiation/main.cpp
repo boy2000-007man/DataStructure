@@ -20,32 +20,27 @@ template <typename T> void swap(T &a, T &b) {
 #define Report(rank) Report(no[rank], rank)
 void sort(int l, int r) {
     static int result[4];
-    if (r - l == 1)
-        Report(l);
-    else if (r - l == 2)
-        left[leftNum++] = l;
-    else if (r - l == 3) {
-        Measure(no[l], no[l + 1], no[l + 2], -1, &result[0], &result[1], &result[2], &result[3]);
-        for (int i = 0; i < 3; i++) {
-            swap(no[l + i], no[l + 1 - result[i]]);
-            swap(result[i], result[1 - result[i]]);
-        }
-        for (int i = l; i < r; i++)
-            Report(i);
-    } else if (r - l == 4) {
-        Measure(no[l], no[l + 1], no[l + 2], no[l + 3], &result[0], &result[1], &result[2], &result[3]);
-        for (int i = 0; i < 4; i++)
-            for (int j = i + 1; j < 4; j++)
-                if (result[i] < result[j]) {
-                    swap(no[l + i], no[l + j]);
-                    swap(result[i], result[j]);
-                }
-        Report(l);
-        Report(r - 1);
-        sort(l + 1, r - 1);
+    switch (r - l) {
+        case 1:
+            Report(l);
+            return ;
+        case 2:
+            left[leftNum++] = l;
+            return ;
+        case 3:
+        case 4:
+            Measure(no[l], no[l + 1], no[l + 2], l + 3 < r ? no[l + 3] : -1, &result[0], &result[1], &result[2], &result[3]);
+            for (int i = 0; i < r - l; i++)
+                for (int j = i + 1; j < r - l; j++)
+                    if (result[i] < result[j]) {
+                        swap(no[l + i], no[l + j]);
+                        swap(result[i], result[j]);
+                    }
+            Report(l);
+            Report(r - 1);
+            sort(l + 1, r - 1);
+            return ;
     }
-    if (r - l < 5)
-        return ;
     swap(no[l + 1], no[l + r >> 1]);
     swap(no[l + 2], no[r - 1]);
     Measure(no[l], no[l + 1], no[l + 2], -1, &result[0], &result[1], &result[2], &result[3]);
@@ -69,8 +64,7 @@ void sort(int l, int r) {
             if (result[i] == 1)
                 swap(no[L++], no[R + i]);
     }
-    L--;
-    swap(no[l], no[L]);
+    swap(no[l], no[--L]);
     Report(L);
     sort(l, L);
     sort(L + 1, r);

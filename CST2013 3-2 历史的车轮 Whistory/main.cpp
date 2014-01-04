@@ -1,3 +1,10 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2014-01-03 21:43
+* Filename      : main.cpp
+* Description   : O(n * m ^ 2)
+*****************************************************************/
 #include <cmath>
 #include <cstdio>
 using namespace std;
@@ -39,8 +46,7 @@ int main() {
 
     for (int i = 0; i < hashNum; i++)
         hashTable[i] = -1;
-    int linkNum = 0;
-    for (int i = 0; i < m; i++) {
+    for (int i = 0, linkNum = 0; i < m; i++) {
         gets(wheel[i]);
 
         set[i] = -1;

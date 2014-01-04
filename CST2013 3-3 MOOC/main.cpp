@@ -1,3 +1,10 @@
+/*****************************************************************
+* Author        : B
+* Email         : boy2000_007man@163.com
+* Last modified : 2014-01-03 22:24
+* Filename      : main.cpp
+* Description   : O(N * log(N))
+*****************************************************************/
 #include <cstdio>
 using namespace std;
 
