@@ -52,10 +52,6 @@ struct SegmentTree {
         return search(left(loc), l, middle(l, r), ly, ry, num) +
             search(right(loc), middle(l, r), r, ly, ry, num);
     }
-    ~SegmentTree() {
-        delete[] orderY;
-        delete[] tempSum;
-    }
 private:
     long long int calcSum(int loc, int l, int r) {
         return tempSum[loc] = 1 < r - l ?
